@@ -35,30 +35,60 @@ class TakuzuState:
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
 
-    board = list()
-
     def __init__(self, n):
-        row = [2] * n
-        for i in range(n):
+        self.size = n
+        self.board = list()
+        row = [2] * self.size
+        for i in range(self.size):
             self.board.append(list(row))
+    
+    def __str__(self):
+        for i in range(self.size):
+            print(*self.board(i))
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
         # TODO
+
+        if(row > self.n or row < 1 or col < 1 or col > self.n):
+            raise ValueError("Board: given position does not exist in the current board.")
+
         return self.board[row -1][col -1]
+
+    def check_value(self, row: int, col: int, value: int):
+        """Checks if the given position's value is equal to the given value"""
+
+        return self.get_number(row, col) == value
+
+    def set_value(self, row: int, col: int, value: int):
+        """Sets the value of a certain position in the board."""
+
+        if self.check_value(row, col, value):
+            return # dont know if we need this
+        if(value not in (0, 1 , 2)):
+            raise ValueError("Board: values must be 0, 1 or 2.")
+        self.board[row - 1][col - 1] = value
 
     def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
         # TODO
-        # add case where there aren't numbers under or above the given position
+
+        if(row == 1 or row == self.n):
+             # do they want it to return None or (number, None) / (None, number) ? QUESTION
+            return None 
+
         return (self.get_number(row + 1, col), self.get_number(row + 1, col))
-        
+
     def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
         # TODO
-        # add case where there aren't numbers left or right of the given position
+
+        if(col == 1 or col == self.n):
+            # do they want it to return None or (number, None) / (None, number) ? QUESTION
+            return None  
+
         return (self.get_number(row, col - 1), self.get_number(row, col + 1))
 
     @staticmethod
