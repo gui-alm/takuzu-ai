@@ -44,7 +44,7 @@ class Board:
     
     def __str__(self):
         for i in range(self.size):
-            print(*self.board(i))
+            print(*self.board[i])
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
