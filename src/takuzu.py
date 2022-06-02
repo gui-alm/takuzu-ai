@@ -35,22 +35,31 @@ class TakuzuState:
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
 
+    board = list()
+
+    def __init__(self, n):
+        row = [2] * n
+        for i in range(n):
+            self.board.append(list(row))
+
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
         # TODO
-        pass
+        return self.board[row -1][col -1]
 
-    def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
+    def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
         # TODO
-        pass
-
-    def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
+        # add case where there aren't numbers under or above the given position
+        return (self.get_number(row + 1, col), self.get_number(row + 1, col))
+        
+    def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
         # TODO
-        pass
+        # add case where there aren't numbers left or right of the given position
+        return (self.get_number(row, col - 1), self.get_number(row, col + 1))
 
     @staticmethod
     def parse_instance_from_stdin():
