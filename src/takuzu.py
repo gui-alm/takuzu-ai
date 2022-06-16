@@ -166,12 +166,12 @@ class Takuzu(Problem):
             n = 2
             c = 0
             for el in row_or_column:
-                if(e == 2):
+                if(el == 2):
                     c = 0
-                elif(e == n):
+                elif(el == n):
                     c += 1
                 else:
-                    n = e
+                    n = el
                     c = 1
                 if(c >= 3):
                     return False
