@@ -38,10 +38,6 @@ class Board:
     def __init__(self, n, board):
         self.size = n
         self.board = board
-#        self.board = list()
-#        row = [2] * self.size
-#        for i in range(self.size):
-#            self.board.append(list(row))
     
     def __str__(self):
         board_str = ""
@@ -82,9 +78,11 @@ class Board:
         respectivamente."""
         # TODO
 
-        if(row == 0 or row == self.size-1):
-             # do they want it to return None or (number, None) / (None, number) ? QUESTION
-            return None 
+        if(row == 0):
+            return (self.get_number(row, col + 1), None)
+
+        if(row == self.size-1):
+            return (None, self.get_number(row, col - 1))
 
         return (self.get_number(row + 1, col), self.get_number(row - 1, col))
 
@@ -93,9 +91,11 @@ class Board:
         respectivamente."""
         # TODO
 
-        if(col == 0 or col == self.size-1):
-            # do they want it to return None or (number, None) / (None, number) ? QUESTION
-            return None  
+        if(col == 0):
+            return (None, self.get_number(row, col + 1))
+
+        if(col == self.size-1):
+            return (self.get_number(row, col - 1), None)
 
         return (self.get_number(row, col - 1), self.get_number(row, col + 1))
 
