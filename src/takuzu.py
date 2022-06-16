@@ -35,25 +35,33 @@ class TakuzuState:
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
 
-    def __init__(self, n):
+    def __init__(self, n, board):
         self.size = n
-        self.board = list()
-        row = [2] * self.size
-        for i in range(self.size):
-            self.board.append(list(row))
+        self.board = board
+#        self.board = list()
+#        row = [2] * self.size
+#        for i in range(self.size):
+#            self.board.append(list(row))
     
     def __str__(self):
+        board_str = ""
         for i in range(self.size):
-            print(*self.board[i])
+            for j in range(self.size):
+                board_str += str(self.get_number(i, j))
+                if(j != self.size-1):
+                    board_str += '\t'
+            board_str += '\n'
+            
+        return board_str
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
         # TODO
 
-        if(row > self.n or row < 1 or col < 1 or col > self.n):
+        if(row > self.size-1 or row < 0 or col < 0 or col > self.size-1):
             raise ValueError("Board: given position does not exist in the current board.")
 
-        return self.board[row -1][col -1]
+        return self.board[row][col]
 
     def check_value(self, row: int, col: int, value: int):
         """Checks if the given position's value is equal to the given value"""
@@ -67,25 +75,25 @@ class Board:
             return # dont know if we need this
         if(value not in (0, 1 , 2)):
             raise ValueError("Board: values must be 0, 1 or 2.")
-        self.board[row - 1][col - 1] = value
+        self.board[row][col] = value
 
     def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
         # TODO
 
-        if(row == 1 or row == self.n):
+        if(row == 0 or row == self.size-1):
              # do they want it to return None or (number, None) / (None, number) ? QUESTION
             return None 
 
-        return (self.get_number(row + 1, col), self.get_number(row + 1, col))
+        return (self.get_number(row + 1, col), self.get_number(row - 1, col))
 
     def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
         # TODO
 
-        if(col == 1 or col == self.n):
+        if(col == 0 or col == self.size-1):
             # do they want it to return None or (number, None) / (None, number) ? QUESTION
             return None  
 
@@ -102,8 +110,17 @@ class Board:
             > from sys import stdin
             > stdin.readline()
         """
-        # TODO
-        pass
+        # TODO (DONE?)
+
+        from sys import stdin
+        n = int(stdin.readline())
+        board = list()
+        for i in range(n):
+            buffer = stdin.readline()
+            row = [int(i) for i in buffer.split()]
+            board.append(row)
+
+        return Board(n, board)
 
     # TODO: outros metodos da classe
 
@@ -149,4 +166,16 @@ if __name__ == "__main__":
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
+
+
+    # Ler tabuleiro do ficheiro 'i1.txt' (Figura 1):
+    # $ python3 takuzu < i1.txt
+    board = Board.parse_instance_from_stdin()
+    print("Initial:\n", board, sep="")
+    # Imprimir valores adjacentes
+    print(board.adjacent_vertical_numbers(3, 3))
+    print(board.adjacent_horizontal_numbers(3, 3))
+    print(board.adjacent_vertical_numbers(1, 1))
+    print(board.adjacent_horizontal_numbers(1, 1))
+
     pass
