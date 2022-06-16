@@ -6,7 +6,6 @@
 # 00000 Nome1
 # 00000 Nome2
 
-from cmath import e
 import sys
 import numpy as np
 from search import (
