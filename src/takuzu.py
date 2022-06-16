@@ -6,7 +6,9 @@
 # 00000 Nome1
 # 00000 Nome2
 
+from cmath import e
 import sys
+import numpy as np
 from search import (
     Problem,
     Node,
@@ -28,6 +30,9 @@ class TakuzuState:
 
     def __lt__(self, other):
         return self.id < other.id
+
+    def getBoard(self):
+        return self.board
 
     # TODO: outros metodos da classe
 
@@ -124,7 +129,6 @@ class Board:
 
     # TODO: outros metodos da classe
 
-
 class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
@@ -150,7 +154,67 @@ class Takuzu(Problem):
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas com uma sequência de números adjacentes."""
         # TODO
-        pass
+
+        board_t = board_t = [list(i) for i in zip(*self.board)] 
+
+        # check if all positions are filled
+        for row in self.board:
+            if row.count(2) != 0:
+                return False
+        
+        # check for number of equal consecutive values
+        def valid(row_or_column):
+            n = 2
+            c = 0
+            for el in row_or_column:
+                if(e == 2):
+                    c = 0
+                elif(e == n):
+                    c += 1
+                else:
+                    n = e
+                    c = 1
+                if(c >= 3):
+                    return False
+            return True
+
+        for row in self.board:
+            if not valid(row):
+                return False
+
+        for column in board_t:
+            if not valid(column):
+                return True
+
+        # check if rows have the same number of 0s and 1s
+        for row in self.board:
+            if(self.size % 2 == 0):
+                if(row.count(0) != row.count(1)):
+                    return False
+            else:
+                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero? 
+                    return False
+
+        # check if columns have the same number of 0s and 1s
+        for row in board_t:
+            if(self.size % 2 == 0):
+                if(row.count(0) != row.count(1)):
+                    return False
+            else:
+                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero? 
+                    return False
+
+        # checking if all rows are different
+        duplicate_rows = {tuple(x) for x in self.board if self.board.count(x) > 1}
+
+        if(len(duplicate_rows) != 0):
+            return False
+
+        # checking if all columns are different
+        duplicate_columns = {tuple(x) for x in board_t if board_t.count(x) > 1}
+        
+        if(len(duplicate_columns) != 0):
+            return False
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
