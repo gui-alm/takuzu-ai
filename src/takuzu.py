@@ -25,6 +25,7 @@ class TakuzuState:
     def __init__(self, board):
         self.board = board
         self.id = TakuzuState.state_id
+        self.board_size = len(board)
         TakuzuState.state_id += 1
 
     def __lt__(self, other):
@@ -53,6 +54,9 @@ class Board:
             board_str += '\n'
             
         return board_str
+
+    def get_size(self):
+        return self.size
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -115,7 +119,7 @@ class Board:
             > stdin.readline()
         """
         # TODO (DONE?)
-
+        
         from sys import stdin
         n = int(stdin.readline())
         board = list()
@@ -138,7 +142,17 @@ class Takuzu(Problem):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
-        pass
+
+        board = Board(state.board_size, state.getBoard())
+        actions = list()
+
+        for i in board.size:
+            for j in board.size:
+                if(board[i][j] == 2):
+                    actions.append((i, j, 0))
+                    actions.append((i, j, 1))
+
+        return actions
 
     def result(self, state: TakuzuState, action):
         """Retorna o estado resultante de executar a 'action' sobre
@@ -146,7 +160,11 @@ class Takuzu(Problem):
         das presentes na lista obtida pela execução de
         self.actions(state)."""
         # TODO
-        pass
+
+        board = Board(state.board_size, state.getBoard())
+        new_state = TakuzuState(board.set_value(action[0], action[1], action[3]))
+
+        return new_state
 
     def goal_test(self, state: TakuzuState):
         """Retorna True se e só se o estado passado como argumento é
@@ -154,7 +172,7 @@ class Takuzu(Problem):
         estão preenchidas com uma sequência de números adjacentes."""
         # TODO
 
-        board_t = board_t = [list(i) for i in zip(*self.board)] 
+        board_t = board_t = [list(i) for i in zip(*self.board)]
 
         # check if all positions are filled
         for row in self.board:
