@@ -25,7 +25,7 @@ class TakuzuState:
     def __init__(self, board):
         self.board = board
         self.id = TakuzuState.state_id
-        self.board_size = len(board)
+        self.board_size = board.get_size()
         TakuzuState.state_id += 1
 
     def __lt__(self, other):
@@ -33,8 +33,8 @@ class TakuzuState:
 
     # TODO: outros metodos da classe
 
-    def getBoard(self):
-        return self.board
+    def get_board(self):
+        return self.board.get_board()
 
 
 class Board:
@@ -80,6 +80,8 @@ class Board:
         if(value not in (0, 1 , 2)):
             raise ValueError("Board: values must be 0, 1 or 2.")
         self.board[row][col] = value
+
+        return self
 
     def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
@@ -132,21 +134,23 @@ class Board:
 
     # TODO: outros metodos da classe
 
-    def getBoard(self):
+    def get_board(self):
         return self.board
 
 class Takuzu(Problem):
+
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         # TODO
-        pass
+        self.size = board.get_size()
+        self.state = TakuzuState(board)
 
     def actions(self, state: TakuzuState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
 
-        board = Board(state.board_size, state.getBoard())
+        board = Board(state.board_size, state.get_board())
         actions = list()
 
         for i in board.size:
@@ -164,8 +168,8 @@ class Takuzu(Problem):
         self.actions(state)."""
         # TODO
 
-        board = Board(state.board_size, state.getBoard())
-        new_state = TakuzuState(board.set_value(action[0], action[1], action[3]))
+        board = Board(state.board_size, state.get_board())
+        new_state = TakuzuState(board.set_value(action[0], action[1], action[2]))
 
         return new_state
 
@@ -175,10 +179,12 @@ class Takuzu(Problem):
         estão preenchidas com uma sequência de números adjacentes."""
         # TODO
 
-        board_t = board_t = [list(i) for i in zip(*self.board)]
+        board_l = state.get_board()
+
+        board_t = [list(i) for i in zip(*board_l)]
 
         # check if all positions are filled
-        for row in self.board:
+        for row in board_l:
             if row.count(2) != 0:
                 return False
         
@@ -198,7 +204,7 @@ class Takuzu(Problem):
                     return False
             return True
 
-        for row in self.board:
+        for row in board_l:
             if not valid(row):
                 return False
 
@@ -207,12 +213,12 @@ class Takuzu(Problem):
                 return True
 
         # check if rows have the same number of 0s and 1s
-        for row in self.board:
+        for row in board_l:
             if(self.size % 2 == 0):
                 if(row.count(0) != row.count(1)):
                     return False
             else:
-                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero? 
+                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero?
                     return False
 
         # check if columns have the same number of 0s and 1s
@@ -221,11 +227,11 @@ class Takuzu(Problem):
                 if(row.count(0) != row.count(1)):
                     return False
             else:
-                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero? 
+                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero?
                     return False
 
         # checking if all rows are different
-        duplicate_rows = {tuple(x) for x in self.board if self.board.count(x) > 1}
+        duplicate_rows = {tuple(x) for x in board_l if board_l.count(x) > 1}
 
         if(len(duplicate_rows) != 0):
             return False
@@ -235,6 +241,8 @@ class Takuzu(Problem):
         
         if(len(duplicate_columns) != 0):
             return False
+
+        return True
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
@@ -255,17 +263,24 @@ if __name__ == "__main__":
     # Ler tabuleiro do ficheiro 'i1.txt' (Figura 1):
     # $ python3 takuzu < i1.txt
     board = Board.parse_instance_from_stdin()
-    print("Initial:\n", board, sep="")
 
     # Imprimir valores adjacentes
     problem = Takuzu(board)
 
-    initial_state = TakuzuState(board)
+    s0 = TakuzuState(board)
+    print("Initial:\n", s0.board, sep="")
 
-    #print(initial_state.board.get_number(2, 2))
+    s1 = problem.result(s0, (0, 0, 0))
+    s2 = problem.result(s1, (0, 2, 1))
+    s3 = problem.result(s2, (1, 0, 1))
+    s4 = problem.result(s3, (1, 1, 0))
+    s5 = problem.result(s4, (1, 3, 1))
+    s6 = problem.result(s5, (2, 0, 0))
+    s7 = problem.result(s6, (2, 2, 1))
+    s8 = problem.result(s7, (2, 3, 1))
+    s9 = problem.result(s8, (3, 2, 0))
 
-    #result_state = problem.result(initial_state, (2, 2, 1))
-
-    #print(initial_state.board.get_number(2, 2))
+    print("Is goal?", problem.goal_test(s9))
+    print("Solution:\n", s9.board, sep="")
 
     pass
