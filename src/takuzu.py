@@ -137,20 +137,24 @@ class Board:
     def get_board(self):
         return self.board
 
+    def get_copy(self):
+        copy = list()
+        for row in self.board:
+            copy.append(row[:])
+        return copy
+
 class Takuzu(Problem):
 
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         # TODO
-        self.size = board.get_size()
-        self.state = TakuzuState(board)
 
     def actions(self, state: TakuzuState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
 
-        board = Board(state.board_size, state.get_board())
+        board = state.get_board()
         actions = list()
 
         for i in board.size:
@@ -168,7 +172,7 @@ class Takuzu(Problem):
         self.actions(state)."""
         # TODO
 
-        board = Board(state.board_size, state.get_board())
+        board = Board(state.board_size, state.board.get_copy())
         new_state = TakuzuState(board.set_value(action[0], action[1], action[2]))
 
         return new_state
@@ -214,7 +218,7 @@ class Takuzu(Problem):
 
         # check if rows have the same number of 0s and 1s
         for row in board_l:
-            if(self.size % 2 == 0):
+            if(state.board_size % 2 == 0):
                 if(row.count(0) != row.count(1)):
                     return False
             else:
@@ -223,7 +227,7 @@ class Takuzu(Problem):
 
         # check if columns have the same number of 0s and 1s
         for row in board_t:
-            if(self.size % 2 == 0):
+            if(state.board_size % 2 == 0):
                 if(row.count(0) != row.count(1)):
                     return False
             else:
@@ -263,7 +267,6 @@ if __name__ == "__main__":
     # Ler tabuleiro do ficheiro 'i1.txt' (Figura 1):
     # $ python3 takuzu < i1.txt
     board = Board.parse_instance_from_stdin()
-
     # Imprimir valores adjacentes
     problem = Takuzu(board)
 
@@ -280,7 +283,16 @@ if __name__ == "__main__":
     s8 = problem.result(s7, (2, 3, 1))
     s9 = problem.result(s8, (3, 2, 0))
 
+    print("1:\n", s1.board, sep="")
+    print("2:\n", s2.board, sep="")
+    print("3:\n", s3.board, sep="")
+    print("4:\n", s4.board, sep="")
+    print("5:\n", s5.board, sep="")
+    print("6:\n", s6.board, sep="")
+    print("7:\n", s7.board, sep="")
+    print("8:\n", s8.board, sep="")
+    print("9:\n", s9.board, sep="")
+
     print("Is goal?", problem.goal_test(s9))
-    print("Solution:\n", s9.board, sep="")
 
     pass
