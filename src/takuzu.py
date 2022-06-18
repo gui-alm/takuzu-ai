@@ -7,6 +7,7 @@
 # 00000 Nome2
 
 import sys
+import numpy as np
 from search import (
     Problem,
     Node,
@@ -24,6 +25,7 @@ class TakuzuState:
     def __init__(self, board):
         self.board = board
         self.id = TakuzuState.state_id
+        self.board_size = len(board)
         TakuzuState.state_id += 1
 
     def __lt__(self, other):
@@ -31,26 +33,79 @@ class TakuzuState:
 
     # TODO: outros metodos da classe
 
+    def getBoard(self):
+        return self.board
+
 
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
 
+    def __init__(self, n, board):
+        self.size = n
+        self.board = board
+    
+    def __str__(self):
+        board_str = ""
+        for i in range(self.size):
+            for j in range(self.size):
+                board_str += str(self.get_number(i, j))
+                if(j != self.size-1):
+                    board_str += '\t'
+            board_str += '\n'
+            
+        return board_str
+
+    def get_size(self):
+        return self.size
+
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
         # TODO
-        pass
 
-    def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
+        if(row > self.size-1 or row < 0 or col < 0 or col > self.size-1):
+            raise ValueError("Board: given position does not exist in the current board.")
+
+        return self.board[row][col]
+
+    def check_value(self, row: int, col: int, value: int):
+        """Checks if the given position's value is equal to the given value"""
+
+        return self.get_number(row, col) == value
+
+    def set_value(self, row: int, col: int, value: int):
+        """Sets the value of a certain position in the board."""
+
+        if self.check_value(row, col, value):
+            return # dont know if we need this
+        if(value not in (0, 1 , 2)):
+            raise ValueError("Board: values must be 0, 1 or 2.")
+        self.board[row][col] = value
+
+    def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
         # TODO
-        pass
 
-    def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
+        if(row == 0):
+            return (self.get_number(row, col + 1), None)
+
+        if(row == self.size-1):
+            return (None, self.get_number(row, col - 1))
+
+        return (self.get_number(row + 1, col), self.get_number(row - 1, col))
+
+    def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
         # TODO
-        pass
+
+        if(col == 0):
+            return (None, self.get_number(row, col + 1))
+
+        if(col == self.size-1):
+            return (self.get_number(row, col - 1), None)
+
+        return (self.get_number(row, col - 1), self.get_number(row, col + 1))
 
     @staticmethod
     def parse_instance_from_stdin():
@@ -63,11 +118,22 @@ class Board:
             > from sys import stdin
             > stdin.readline()
         """
-        # TODO
-        pass
+        # TODO (DONE?)
+        
+        from sys import stdin
+        n = int(stdin.readline())
+        board = list()
+        for i in range(n):
+            buffer = stdin.readline()
+            row = [int(i) for i in buffer.split()]
+            board.append(row)
+
+        return Board(n, board)
 
     # TODO: outros metodos da classe
 
+    def getBoard(self):
+        return self.board
 
 class Takuzu(Problem):
     def __init__(self, board: Board):
@@ -79,7 +145,17 @@ class Takuzu(Problem):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
-        pass
+
+        board = Board(state.board_size, state.getBoard())
+        actions = list()
+
+        for i in board.size:
+            for j in board.size:
+                if(board[i][j] == 2):
+                    actions.append((i, j, 0))
+                    actions.append((i, j, 1))
+
+        return actions
 
     def result(self, state: TakuzuState, action):
         """Retorna o estado resultante de executar a 'action' sobre
@@ -87,14 +163,78 @@ class Takuzu(Problem):
         das presentes na lista obtida pela execução de
         self.actions(state)."""
         # TODO
-        pass
+
+        board = Board(state.board_size, state.getBoard())
+        new_state = TakuzuState(board.set_value(action[0], action[1], action[3]))
+
+        return new_state
 
     def goal_test(self, state: TakuzuState):
         """Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas com uma sequência de números adjacentes."""
         # TODO
-        pass
+
+        board_t = board_t = [list(i) for i in zip(*self.board)]
+
+        # check if all positions are filled
+        for row in self.board:
+            if row.count(2) != 0:
+                return False
+        
+        # check for number of equal consecutive values
+        def valid(row_or_column):
+            n = 2
+            c = 0
+            for el in row_or_column:
+                if(el == 2):
+                    c = 0
+                elif(el == n):
+                    c += 1
+                else:
+                    n = el
+                    c = 1
+                if(c >= 3):
+                    return False
+            return True
+
+        for row in self.board:
+            if not valid(row):
+                return False
+
+        for column in board_t:
+            if not valid(column):
+                return True
+
+        # check if rows have the same number of 0s and 1s
+        for row in self.board:
+            if(self.size % 2 == 0):
+                if(row.count(0) != row.count(1)):
+                    return False
+            else:
+                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero? 
+                    return False
+
+        # check if columns have the same number of 0s and 1s
+        for row in board_t:
+            if(self.size % 2 == 0):
+                if(row.count(0) != row.count(1)):
+                    return False
+            else:
+                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero? 
+                    return False
+
+        # checking if all rows are different
+        duplicate_rows = {tuple(x) for x in self.board if self.board.count(x) > 1}
+
+        if(len(duplicate_rows) != 0):
+            return False
+
+        # checking if all columns are different
+        duplicate_columns = {tuple(x) for x in board_t if board_t.count(x) > 1}
+        
+        if(len(duplicate_columns) != 0):
+            return False
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
@@ -110,4 +250,22 @@ if __name__ == "__main__":
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
+
+
+    # Ler tabuleiro do ficheiro 'i1.txt' (Figura 1):
+    # $ python3 takuzu < i1.txt
+    board = Board.parse_instance_from_stdin()
+    print("Initial:\n", board, sep="")
+
+    # Imprimir valores adjacentes
+    problem = Takuzu(board)
+
+    initial_state = TakuzuState(board)
+
+    #print(initial_state.board.get_number(2, 2))
+
+    #result_state = problem.result(initial_state, (2, 2, 1))
+
+    #print(initial_state.board.get_number(2, 2))
+
     pass
