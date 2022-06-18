@@ -31,10 +31,10 @@ class TakuzuState:
     def __lt__(self, other):
         return self.id < other.id
 
+    # TODO: outros metodos da classe
+
     def getBoard(self):
         return self.board
-
-    # TODO: outros metodos da classe
 
 
 class Board:
@@ -131,6 +131,9 @@ class Board:
         return Board(n, board)
 
     # TODO: outros metodos da classe
+
+    def getBoard(self):
+        return self.board
 
 class Takuzu(Problem):
     def __init__(self, board: Board):
@@ -253,10 +256,16 @@ if __name__ == "__main__":
     # $ python3 takuzu < i1.txt
     board = Board.parse_instance_from_stdin()
     print("Initial:\n", board, sep="")
+
     # Imprimir valores adjacentes
-    print(board.adjacent_vertical_numbers(3, 3))
-    print(board.adjacent_horizontal_numbers(3, 3))
-    print(board.adjacent_vertical_numbers(1, 1))
-    print(board.adjacent_horizontal_numbers(1, 1))
+    problem = Takuzu(board)
+
+    initial_state = TakuzuState(board)
+
+    #print(initial_state.board.get_number(2, 2))
+
+    #result_state = problem.result(initial_state, (2, 2, 1))
+
+    #print(initial_state.board.get_number(2, 2))
 
     pass
