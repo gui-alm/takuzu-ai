@@ -148,6 +148,7 @@ class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         # TODO
+        Problem.__init__(self, TakuzuState(board))
 
     def actions(self, state: TakuzuState):
         """Retorna uma lista de ações que podem ser executadas a
@@ -157,8 +158,8 @@ class Takuzu(Problem):
         board = state.get_board()
         actions = list()
 
-        for i in board.size:
-            for j in board.size:
+        for i in range(state.board_size):
+            for j in range(state.board_size):
                 if(board[i][j] == 2):
                     actions.append((i, j, 0))
                     actions.append((i, j, 1))
@@ -214,7 +215,7 @@ class Takuzu(Problem):
 
         for column in board_t:
             if not valid(column):
-                return True
+                return False
 
         # check if rows have the same number of 0s and 1s
         for row in board_l:
@@ -270,29 +271,9 @@ if __name__ == "__main__":
     # Imprimir valores adjacentes
     problem = Takuzu(board)
 
-    s0 = TakuzuState(board)
-    print("Initial:\n", s0.board, sep="")
+    goal_node = depth_first_tree_search(problem)
 
-    s1 = problem.result(s0, (0, 0, 0))
-    s2 = problem.result(s1, (0, 2, 1))
-    s3 = problem.result(s2, (1, 0, 1))
-    s4 = problem.result(s3, (1, 1, 0))
-    s5 = problem.result(s4, (1, 3, 1))
-    s6 = problem.result(s5, (2, 0, 0))
-    s7 = problem.result(s6, (2, 2, 1))
-    s8 = problem.result(s7, (2, 3, 1))
-    s9 = problem.result(s8, (3, 2, 0))
-
-    print("1:\n", s1.board, sep="")
-    print("2:\n", s2.board, sep="")
-    print("3:\n", s3.board, sep="")
-    print("4:\n", s4.board, sep="")
-    print("5:\n", s5.board, sep="")
-    print("6:\n", s6.board, sep="")
-    print("7:\n", s7.board, sep="")
-    print("8:\n", s8.board, sep="")
-    print("9:\n", s9.board, sep="")
-
-    print("Is goal?", problem.goal_test(s9))
+    #print("Is goal?", problem.goal_test(goal_node.state))
+    print(goal_node.state.board, sep="", end="")
 
     pass
