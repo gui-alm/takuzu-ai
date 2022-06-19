@@ -2,9 +2,9 @@
 # Devem alterar as classes e funções neste ficheiro de acordo com as instruções do enunciado.
 # Além das funções e classes já definidas, podem acrescentar outras que considerem pertinentes.
 
-# Grupo 00:
-# 00000 Nome1
-# 00000 Nome2
+# Grupo 6:
+# 99230 Guilherme Almeida Patrão
+# 99248 Joao Domingos Baracho
 
 from os import stat
 import sys
@@ -303,17 +303,7 @@ if __name__ == "__main__":
     board = Board.parse_instance_from_stdin()
     problem = Takuzu(board)
 
+    # search algorithm
     goal_node = depth_first_tree_search(problem)
 
-    #print("Is goal?", problem.goal_test(goal_node.state))
     print(goal_node.state.board, sep="", end="")
-
-    """
-    board = Board.parse_instance_from_stdin()
-    state = TakuzuState(board)
-    problem = Takuzu(board)
-
-    print("Is goal? ", problem.goal_test(state))
-    """
-
-    pass
