@@ -3,13 +3,10 @@
 # Além das funções e classes já definidas, podem acrescentar outras que considerem pertinentes.
 
 # Grupo 6:
-# 99230 Guilherme Almeida Patrão
+# 99230 Guilherme Almeida Patrao
 # 99248 Joao Domingos Baracho
 
-from os import stat
-import sys
-import numpy as np
-from regex import R
+
 from search import (
     Problem,
     Node,
@@ -39,6 +36,7 @@ class TakuzuState:
         return self.board.get_board()
 
     def valid_action(self, row, col, piece):
+
         row_c = self.board.get_row(row)
         row_c[col] = piece
         if not valid(row_c):
