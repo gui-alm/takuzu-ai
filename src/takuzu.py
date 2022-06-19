@@ -2,12 +2,14 @@
 # Devem alterar as classes e funções neste ficheiro de acordo com as instruções do enunciado.
 # Além das funções e classes já definidas, podem acrescentar outras que considerem pertinentes.
 
-# Grupo 00:
-# 00000 Nome1
-# 00000 Nome2
+# Grupo 6:
+# 99230 Guilherme Almeida Patrão
+# 99248 Joao Domingos Baracho
 
+from os import stat
 import sys
 import numpy as np
+from regex import R
 from search import (
     Problem,
     Node,
@@ -36,6 +38,25 @@ class TakuzuState:
     def get_board(self):
         return self.board.get_board()
 
+    def valid_action(self, row, col, piece):
+        row_c = self.board.get_row(row)
+        row_c[col] = piece
+        if not valid(row_c):
+            return False
+
+        if(row_c.count(piece) > (self.board_size//2 + self.board_size%2)):
+            return False
+
+        col_c = self.board.get_col(col)
+        col_c[row] = piece
+        if not valid(col_c):
+            return False
+
+        if(col_c.count(piece) > (self.board_size//2 + self.board_size%2)):
+            return False
+        
+        return True
+
 
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
@@ -63,7 +84,7 @@ class Board:
         # TODO
 
         if(row > self.size-1 or row < 0 or col < 0 or col > self.size-1):
-            raise ValueError("Board: given position does not exist in the current board.")
+            raise ValueError("Board: given position does not exist in the current board.", row, " : ", col)
 
         return self.board[row][col]
 
@@ -89,10 +110,10 @@ class Board:
         # TODO
 
         if(row == 0):
-            return (self.get_number(row, col + 1), None)
+            return (self.get_number(row + 1, col), None)
 
         if(row == self.size-1):
-            return (None, self.get_number(row, col - 1))
+            return (None, self.get_number(row -1, col))
 
         return (self.get_number(row + 1, col), self.get_number(row - 1, col))
 
@@ -137,11 +158,36 @@ class Board:
     def get_board(self):
         return self.board
 
+    def get_row(self, row):
+        return self.board[row][:]
+
+    def get_col(self, col):
+        copy = list()
+        for i in range(self.size):
+            copy.append(self.board[i][col])
+        return copy
+
     def get_copy(self):
         copy = list()
         for row in self.board:
             copy.append(row[:])
         return copy
+
+# check for number of equal consecutive values
+def valid(row_or_column):
+    n = 2
+    c = 0
+    for el in row_or_column:
+        if(el == 2):
+            c = 0
+        elif(el == n):
+            c += 1
+        else:
+            n = el
+            c = 1
+        if(c >= 3):
+            return False
+    return True
 
 class Takuzu(Problem):
 
@@ -161,8 +207,11 @@ class Takuzu(Problem):
         for i in range(state.board_size):
             for j in range(state.board_size):
                 if(board[i][j] == 2):
-                    actions.append((i, j, 0))
-                    actions.append((i, j, 1))
+                    if(state.valid_action(i, j, 0)):
+                        actions.append((i, j, 0))
+                    if(state.valid_action(i, j, 1)):
+                        actions.append((i, j, 1))
+                    return actions
 
         return actions
 
@@ -192,22 +241,6 @@ class Takuzu(Problem):
         for row in board_l:
             if row.count(2) != 0:
                 return False
-        
-        # check for number of equal consecutive values
-        def valid(row_or_column):
-            n = 2
-            c = 0
-            for el in row_or_column:
-                if(el == 2):
-                    c = 0
-                elif(el == n):
-                    c += 1
-                else:
-                    n = el
-                    c = 1
-                if(c >= 3):
-                    return False
-            return True
 
         for row in board_l:
             if not valid(row):
@@ -264,16 +297,13 @@ if __name__ == "__main__":
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
 
-
+    
     # Ler tabuleiro do ficheiro 'i1.txt' (Figura 1):
     # $ python3 takuzu < i1.txt
     board = Board.parse_instance_from_stdin()
-    # Imprimir valores adjacentes
     problem = Takuzu(board)
 
+    # search algorithm
     goal_node = depth_first_tree_search(problem)
 
-    #print("Is goal?", problem.goal_test(goal_node.state))
     print(goal_node.state.board, sep="", end="")
-
-    pass
