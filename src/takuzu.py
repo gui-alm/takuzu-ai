@@ -6,10 +6,8 @@
 # 99230 Guilherme Almeida Patrão
 # 99248 Joao Domingos Baracho
 
-from os import stat
 import sys
 import numpy as np
-from regex import R
 from search import (
     Problem,
     Node,
@@ -239,11 +237,7 @@ class Takuzu(Problem):
 
         # check if all positions are filled
         for row in board_l:
-            if row.count(2) != 0:
-                return False
-
-        for row in board_l:
-            if not valid(row):
+            if (row.count(2) != 0) or not valid(row):
                 return False
 
         for column in board_t:
@@ -256,7 +250,7 @@ class Takuzu(Problem):
                 if(row.count(0) != row.count(1)):
                     return False
             else:
-                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero?
+                if(abs(row.count(0) - row.count(1)) != 1):
                     return False
 
         # check if columns have the same number of 0s and 1s
@@ -265,7 +259,7 @@ class Takuzu(Problem):
                 if(row.count(0) != row.count(1)):
                     return False
             else:
-                if(abs(row.count(0) - row.count(1)) != 1): # QUESTION: can it be zero?
+                if(abs(row.count(0) - row.count(1)) != 1):
                     return False
 
         # checking if all rows are different
