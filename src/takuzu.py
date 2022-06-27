@@ -81,7 +81,7 @@ class Board:
         # TODO
 
         if(row > self.size-1 or row < 0 or col < 0 or col > self.size-1):
-            raise ValueError("Board: given position does not exist in the current board.", row, " : ", col)
+            return None #raise ValueError("Board: given position does not exist in the current board.", row, " : ", col)
 
         return self.board[row][col]
 
@@ -106,26 +106,30 @@ class Board:
         respectivamente."""
         # TODO
 
-        if(row == 0):
-            return (self.get_number(row + 1, col), None)
-
-        if(row == self.size-1):
-            return (None, self.get_number(row -1, col))
-
         return (self.get_number(row + 1, col), self.get_number(row - 1, col))
+
+    def adjacent_vertical_numbers2(self, row: int, col: int):
+        """Devolve os valores 2 imediatamente abaixo e acima,
+        respectivamente."""
+        # TODO
+
+        return (self.get_number(row + 2, col), self.get_number(row + 1, col),
+            self.get_number(row - 1, col), self.get_number(row - 2, col))    
 
     def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
         # TODO
 
-        if(col == 0):
-            return (None, self.get_number(row, col + 1))
-
-        if(col == self.size-1):
-            return (self.get_number(row, col - 1), None)
-
         return (self.get_number(row, col - 1), self.get_number(row, col + 1))
+
+    def adjacent_horizontal_numbers2(self, row: int, col: int):
+        """Devolve os valores imediatamente à esquerda e à direita,
+        respectivamente."""
+        # TODO
+
+        return (self.get_number(row, col - 2), self.get_number(row, col - 1),
+            self.get_number(row, col + 1), self.get_number(row, col + 2))
 
     @staticmethod
     def parse_instance_from_stdin():
@@ -148,7 +152,21 @@ class Board:
             row = [int(i) for i in buffer.split()]
             board.append(row)
 
-        return Board(n, board)
+        new = Board(n, board)
+
+        for i in range(n):
+            for j in range(n):
+                if(board[i][j] == 2):
+                    a_v = new.adjacent_vertical_numbers2(i, j)
+                    a_h = new.adjacent_horizontal_numbers2(i, j)
+                    if(a_v[0:2] == (1,1) or a_v[1:3] == (1,1) or a_v[2:4] == (1,1) or 
+                    a_h[0:2] == (1,1) or a_h[1:3] == (1,1) or a_h[2:4] == (1,1)):
+                        new.set_value(i, j, 0)
+                    if(a_v[0:2] == (0,0) or a_v[1:3] == (0,0) or a_v[2:4] == (0,0) or 
+                    a_h[0:2] == (0,0) or a_h[1:3] == (0,0) or a_h[2:4] == (0,0)):
+                        new.set_value(i, j, 1)
+
+        return new
 
     # TODO: outros metodos da classe
 
@@ -236,30 +254,8 @@ class Takuzu(Problem):
 
         # check if all positions are filled
         for row in board_l:
-            if (row.count(2) != 0) or not valid(row):
+            if (row.count(2) != 0): # or not valid(row):
                 return False
-
-        for column in board_t:
-            if not valid(column):
-                return False
-
-        # check if rows have the same number of 0s and 1s
-        for row in board_l:
-            if(state.board_size % 2 == 0):
-                if(row.count(0) != row.count(1)):
-                    return False
-            else:
-                if(abs(row.count(0) - row.count(1)) != 1):
-                    return False
-
-        # check if columns have the same number of 0s and 1s
-        for row in board_t:
-            if(state.board_size % 2 == 0):
-                if(row.count(0) != row.count(1)):
-                    return False
-            else:
-                if(abs(row.count(0) - row.count(1)) != 1):
-                    return False
 
         # checking if all rows are different
         duplicate_rows = {tuple(x) for x in board_l if board_l.count(x) > 1}
