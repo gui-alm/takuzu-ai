@@ -1,7 +1,3 @@
-# takuzu.py: Template para implementação do projeto de Inteligência Artificial 2021/2022.
-# Devem alterar as classes e funções neste ficheiro de acordo com as instruções do enunciado.
-# Além das funções e classes já definidas, podem acrescentar outras que considerem pertinentes.
-
 # Grupo 6:
 # 99230 Guilherme Almeida Patrao
 # 99248 Joao Domingos Baracho
@@ -29,7 +25,6 @@ class TakuzuState:
     def __lt__(self, other):
         return self.id < other.id
 
-    # TODO: outros metodos da classe
 
     def get_board(self):
         return self.board.get_board()
@@ -78,10 +73,9 @@ class Board:
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
-        # TODO
 
         if(row > self.size-1 or row < 0 or col < 0 or col > self.size-1):
-            return None #raise ValueError("Board: given position does not exist in the current board.", row, " : ", col)
+            return None 
 
         return self.board[row][col]
 
@@ -104,14 +98,12 @@ class Board:
     def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
-        # TODO
 
         return (self.get_number(row + 1, col), self.get_number(row - 1, col))
 
     def adjacent_vertical_numbers2(self, row: int, col: int):
         """Devolve os valores 2 imediatamente abaixo e acima,
         respectivamente."""
-        # TODO
 
         return (self.get_number(row + 2, col), self.get_number(row + 1, col),
             self.get_number(row - 1, col), self.get_number(row - 2, col))    
@@ -119,14 +111,12 @@ class Board:
     def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
-        # TODO
 
         return (self.get_number(row, col - 1), self.get_number(row, col + 1))
 
     def adjacent_horizontal_numbers2(self, row: int, col: int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
-        # TODO
 
         return (self.get_number(row, col - 2), self.get_number(row, col - 1),
             self.get_number(row, col + 1), self.get_number(row, col + 2))
@@ -134,15 +124,7 @@ class Board:
     @staticmethod
     def parse_instance_from_stdin():
         """Lê o test do standard input (stdin) que é passado como argumento
-        e retorna uma instância da classe Board.
-
-        Por exemplo:
-            $ python3 takuzu.py < input_T01
-
-            > from sys import stdin
-            > stdin.readline()
-        """
-        # TODO (DONE?)
+        e retorna uma instância da classe Board."""
         
         from sys import stdin
         n = int(stdin.readline())
@@ -167,8 +149,6 @@ class Board:
                         new.set_value(i, j, 1)
 
         return new
-
-    # TODO: outros metodos da classe
 
     def get_board(self):
         return self.board
@@ -208,13 +188,11 @@ class Takuzu(Problem):
 
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
-        # TODO
         Problem.__init__(self, TakuzuState(board))
 
     def actions(self, state: TakuzuState):
         """Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento."""
-        # TODO
 
         board = state.get_board()
         actions = list()
@@ -235,7 +213,6 @@ class Takuzu(Problem):
         'state' passado como argumento. A ação a executar deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state)."""
-        # TODO
 
         board = Board(state.board_size, state.board.get_copy())
         new_state = TakuzuState(board.set_value(action[0], action[1], action[2]))
@@ -246,7 +223,6 @@ class Takuzu(Problem):
         """Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se todas as posições do tabuleiro
         estão preenchidas com uma sequência de números adjacentes."""
-        # TODO
 
         board_l = state.get_board()
 
@@ -273,26 +249,12 @@ class Takuzu(Problem):
 
     def h(self, node: Node):
         """Função heuristica utilizada para a procura A*."""
-        # TODO
         pass
-
-    # TODO: outros metodos da classe
 
 
 if __name__ == "__main__":
-    # TODO:
-    # Ler o ficheiro do standard input,
-    # Usar uma técnica de procura para resolver a instância,
-    # Retirar a solução a partir do nó resultante,
-    # Imprimir para o standard output no formato indicado.
-
-    
-    # Ler tabuleiro do ficheiro 'i1.txt' (Figura 1):
-    # $ python3 takuzu < i1.txt
     board = Board.parse_instance_from_stdin()
     problem = Takuzu(board)
-
-    # search algorithm
     goal_node = depth_first_tree_search(problem)
 
     print(goal_node.state.board, sep="", end="")
